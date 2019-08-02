@@ -2,16 +2,18 @@ package com.lovisgod.travelmantics
 
 import Adapter.DealAdapter
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+import com.google.android.material.snackbar.Snackbar.make
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -24,6 +26,7 @@ class ListActivity : AppCompatActivity() {
 
     private var deals: ArrayList<TravelDeal> = ArrayList<TravelDeal>()
     override fun onCreate(savedInstanceState: Bundle?) {
+        title = "Latest Deals"
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
         val recyclerView:RecyclerView = findViewById(R.id.deals_recycler)
@@ -80,10 +83,26 @@ class ListActivity : AppCompatActivity() {
                 startActivity(intent)
                 return true
             }
+            R.id.logout_menu -> {
+              loguserout()
+                return true
+            }
             else -> return super.onOptionsItemSelected(item)
         }
 
 
+    }
+
+    private fun loguserout(){
+        val snackbar = make(findViewById(android.R.id.content), "Do you want to log out", LENGTH_LONG)
+            snackbar.setAction("Yes", View.OnClickListener {
+            var FirebaseAuth:FirebaseAuth = FirebaseAuth.getInstance()
+            FirebaseAuth.signOut()
+            val i = Intent(this, LoginActivity::class.java)
+            startActivity(i)
+        })
+// show the snackbar
+        snackbar.show()
     }
 
 }

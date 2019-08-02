@@ -22,6 +22,9 @@
         </activity>
         <activity android:name=".InsertActivity">
         </activity>
+        <activity
+                android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+                android:theme="@style/Base.Theme.AppCompat" />
     </application>
 
 </manifest>

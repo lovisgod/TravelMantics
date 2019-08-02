@@ -4,6 +4,9 @@
     <item android:id="@+id/list_activity_menu"
           android:title="@string/add_deals"
           app:showAsAction="never">
-
+    </item>
+    <item android:id="@+id/logout_menu"
+          android:title="@string/logout"
+          app:showAsAction="never">
     </item>
 </menu>

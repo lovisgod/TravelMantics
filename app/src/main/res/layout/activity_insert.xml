@@ -43,4 +43,24 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginEnd="@dimen/right_left_standard"
             app:layout_constraintEnd_toEndOf="parent"/>
+    <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            app:srcCompat="@mipmap/ic_launcher_round"
+            android:id="@+id/deal_image"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@+id/txtdescription"
+            app:layout_constraintStart_toStartOf="@+id/txtdescription"/>
+    <Button
+            android:text="@string/pick_image"
+            android:background="@color/colorAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pick_image"
+            app:layout_constraintStart_toEndOf="@+id/deal_image"
+            android:textStyle="bold"
+            android:textColor="#fff"
+            android:padding="5dp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/deal_image"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
