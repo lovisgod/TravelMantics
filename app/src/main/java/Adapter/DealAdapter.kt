@@ -1,18 +1,17 @@
 package Adapter
 
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.lovisgod.travelmantics.InsertActivity
 import com.lovisgod.travelmantics.R
 import com.lovisgod.travelmantics.TravelDeal
-import com.lovisgod.travelmantics.TravelDeals
-import kotlinx.android.synthetic.main.rv_deals.view.*
 
 class DealAdapter: RecyclerView.Adapter<DealAdapter.DealViewHolder>() {
      private var deals: ArrayList<TravelDeal> = ArrayList<TravelDeal>()
@@ -93,6 +92,7 @@ class DealAdapter: RecyclerView.Adapter<DealAdapter.DealViewHolder>() {
         var tvTitle = itemView.findViewById<TextView>(R.id.tv_title)
         var tvPrice = itemView.findViewById<TextView>(R.id.rv_price)
         var tvDescription = itemView.findViewById<TextView>(R.id.tv_description)
+        var tvimage = itemView.findViewById<ImageView>(R.id.dealimage)
 
         init {
             itemView.setOnClickListener(this)
@@ -102,6 +102,7 @@ class DealAdapter: RecyclerView.Adapter<DealAdapter.DealViewHolder>() {
             tvTitle.text = deal.title
             tvPrice.text = deal.price
             tvDescription.text = deal.description
+            tvimage.setImageURI(Uri.parse(deal.imageUrl))
         }
 
         override fun onClick(p0: View?) {

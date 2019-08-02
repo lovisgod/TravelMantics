@@ -1,6 +1,7 @@
 package com.lovisgod.travelmantics
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -9,8 +10,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.EditText
 import android.widget.Toast
+import androidx.annotation.Nullable
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_insert.*
 import java.util.*
 
@@ -21,7 +24,11 @@ class InsertActivity : AppCompatActivity() {
 //    var travelDeal = intent.getParcelableExtra<TravelDeal>("Deal")
     var travelDeal: TravelDeal? = null
 
+    var imageUri:Uri? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTitle("Add Deals")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_insert)
         var txtTitle: EditText = findViewById(R.id.txttitle)
@@ -34,7 +41,19 @@ class InsertActivity : AppCompatActivity() {
             txttitle.setText(travelDeal?.title)
             txtprice.setText(travelDeal?.price)
             txtdescription.setText(travelDeal?.description)
+            val imageuri = Uri.parse(travelDeal?.imageUrl)
+            deal_image.setImageURI(imageuri)
         }
+
+        pick_image.setOnClickListener {
+            PickUp()
+        }
+    }
+
+    private fun PickUp() {
+        CropImage.activity()
+            .setAspectRatio(1, 1)
+            .start(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -69,10 +88,10 @@ class InsertActivity : AppCompatActivity() {
         var description: String = txtdescription.text.toString()
         var id : String = UUID.randomUUID().toString()
         if(travelDeal?.id == null) {
-            var deal:TravelDeal = TravelDeal(id,title,description, price, "")
+            var deal:TravelDeal = TravelDeal(id,title,description, price, imageUri.toString())
             databaseReference.child(id).setValue(deal)
         }else {
-            var deal:TravelDeal = TravelDeal(travelDeal!!.id,title,description, price, "")
+            var deal:TravelDeal = TravelDeal(travelDeal!!.id,title,description, price, travelDeal!!.imageUrl)
             databaseReference.child(travelDeal!!.id).setValue(deal)
         }
 
@@ -99,5 +118,19 @@ class InsertActivity : AppCompatActivity() {
         txtdescription.setText("")
         txtprice.setText("")
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, @Nullable data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            //here we get the data back from the gallery
+            val result = CropImage.getActivityResult(data)
+            imageUri = result.uri
+            Log.d("TAG", "imageuri-> : " + imageUri.toString())
+            deal_image.setImageURI(imageUri)
+        } else {
+            //startActivity(new Intent(this, HomeActivity.class));
+            Toast.makeText(this, " ERROR!! -> Please Pick an Image", Toast.LENGTH_LONG).show()
+        }
     }
 }
