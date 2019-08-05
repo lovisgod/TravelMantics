@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.lovisgod.travelmantics.InsertActivity
 import com.lovisgod.travelmantics.R
 import com.lovisgod.travelmantics.TravelDeal
+import com.squareup.picasso.Picasso
 
 class DealAdapter: RecyclerView.Adapter<DealAdapter.DealViewHolder>() {
      private var deals: ArrayList<TravelDeal> = ArrayList<TravelDeal>()
@@ -102,14 +103,16 @@ class DealAdapter: RecyclerView.Adapter<DealAdapter.DealViewHolder>() {
             tvTitle.text = deal.title
             tvPrice.text = deal.price
             tvDescription.text = deal.description
-            tvimage.setImageURI(Uri.parse(deal.imageUrl))
+            var image = deal.imageUrl
+            Picasso.get().load(image).into(tvimage)
+//            tvimage.setImageURI(Uri.parse(deal.imageUrl))
         }
 
         override fun onClick(p0: View?) {
             var position = adapterPosition
             Log.d("TAG", "This is the position -> $position")
             var selectedDeal = deals.get(position)
-            Log.d("TAG", "This is the id -> ${selectedDeal.id}")
+            Log.d("TAG", "This is the id -> ${selectedDeal.imageUrl}")
             val intent = Intent(p0!!.context, InsertActivity::class.java)
             intent.putExtra("Deal", selectedDeal)
             p0.context.startActivity(intent)
