@@ -20,7 +20,8 @@ import com.google.firebase.database.*
 class ListActivity : AppCompatActivity() {
 
     val firebaseDatabase: FirebaseDatabase = FirebaseDatabase.getInstance()
-    val databaseReference: DatabaseReference = firebaseDatabase.reference.child("traveldeals")
+    var userid = FirebaseAuth.getInstance().currentUser?.uid
+    val databaseReference: DatabaseReference = firebaseDatabase.reference.child(userid!!)
     val dealAdapter: DealAdapter = DealAdapter()
     val firebasAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
@@ -81,6 +82,7 @@ class ListActivity : AppCompatActivity() {
             R.id.list_activity_menu -> {
                 val intent: Intent = Intent(this, InsertActivity::class.java)
                 startActivity(intent)
+                finish()
                 return true
             }
             R.id.logout_menu -> {
@@ -100,6 +102,7 @@ class ListActivity : AppCompatActivity() {
             FirebaseAuth.signOut()
             val i = Intent(this, LoginActivity::class.java)
             startActivity(i)
+            finish()
         })
 // show the snackbar
         snackbar.show()

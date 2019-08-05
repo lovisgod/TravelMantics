@@ -31,6 +31,7 @@ class LoginActivity : AppCompatActivity() {
             }else{
                 val intent:Intent = Intent(this, ListActivity::class.java)
                 startActivity(intent)
+                finish()
             }
         }
     }
@@ -47,6 +48,7 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "Welcome ${user!!.email}", Toast.LENGTH_LONG).show()
                 val intent:Intent = Intent(this, ListActivity::class.java)
                 startActivity(intent)
+                finish()
             } else {
                 Toast.makeText(this, "Login Failed", Toast.LENGTH_LONG).show()
             }

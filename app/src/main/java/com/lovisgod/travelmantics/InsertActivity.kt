@@ -8,11 +8,19 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.Nullable
+import androidx.core.net.toFile
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_insert.*
 import java.util.*
@@ -20,11 +28,13 @@ import java.util.*
 class InsertActivity : AppCompatActivity() {
 
     val firebaseDatabase:FirebaseDatabase = FirebaseDatabase.getInstance()
-    val databaseReference: DatabaseReference = firebaseDatabase.reference.child("traveldeals")
+    var userid = FirebaseAuth.getInstance().currentUser?.uid
+    val databaseReference: DatabaseReference = firebaseDatabase.reference.child(userid!!)
 //    var travelDeal = intent.getParcelableExtra<TravelDeal>("Deal")
     var travelDeal: TravelDeal? = null
 
     var imageUri:Uri? = null
+    var imageurl:String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +52,9 @@ class InsertActivity : AppCompatActivity() {
             txtprice.setText(travelDeal?.price)
             txtdescription.setText(travelDeal?.description)
             val imageuri = Uri.parse(travelDeal?.imageUrl)
-            deal_image.setImageURI(imageuri)
+            imageurl = travelDeal?.imageUrl
+//            deal_image.setImageURI(imageuri)
+            Picasso.get().load(imageuri).into(deal_image)
         }
 
         pick_image.setOnClickListener {
@@ -65,10 +77,17 @@ class InsertActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.save_menu -> {
-                saveDeals()
-                Toast.makeText(this, "Deal saved", Toast.LENGTH_LONG).show()
-                clean()
-                displayDealLists()
+                if (imageurl == null){
+                    val snackbar = Snackbar.make(findViewById(android.R.id.content), "PLEASE ADD DEALS BEFORE DELETE", Snackbar.LENGTH_LONG)
+                    // show the snackbar
+                    snackbar.show()
+                }else{
+                    saveDeals()
+                    Toast.makeText(this, "Deal saved", Toast.LENGTH_LONG).show()
+                    clean()
+                    displayDealLists()
+                }
+
                 return true
             }
             R.id.delete_menu -> {
@@ -86,12 +105,13 @@ class InsertActivity : AppCompatActivity() {
         var title: String = txttitle.text.toString()
         var price: String = txtprice.text.toString()
         var description: String = txtdescription.text.toString()
+        var userid = FirebaseAuth.getInstance().currentUser?.uid
         var id : String = UUID.randomUUID().toString()
         if(travelDeal?.id == null) {
-            var deal:TravelDeal = TravelDeal(id,title,description, price, imageUri.toString())
+            var deal:TravelDeal = TravelDeal(id,title,description, price, imageurl!!)
             databaseReference.child(id).setValue(deal)
         }else {
-            var deal:TravelDeal = TravelDeal(travelDeal!!.id,title,description, price, travelDeal!!.imageUrl)
+            var deal:TravelDeal = TravelDeal(travelDeal!!.id,title,description, price, imageurl!!)
             databaseReference.child(travelDeal!!.id).setValue(deal)
         }
 
@@ -99,7 +119,10 @@ class InsertActivity : AppCompatActivity() {
 
     private fun deleteDeals() {
         if(travelDeal?.id == null) {
-            Toast.makeText(this, "Please save a deal before deleting", Toast.LENGTH_LONG).show()
+            val snackbar =
+                Snackbar.make(findViewById(android.R.id.content), "PLEASE ADD DEALS BEFORE DELETE", Snackbar.LENGTH_LONG)
+            // show the snackbar
+            snackbar.show()
         }else {
 
             databaseReference.child(travelDeal!!.id).removeValue()
@@ -111,6 +134,7 @@ class InsertActivity : AppCompatActivity() {
     private fun displayDealLists() {
         val intent = Intent(this, ListActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
     private  fun clean () {
@@ -127,10 +151,23 @@ class InsertActivity : AppCompatActivity() {
             val result = CropImage.getActivityResult(data)
             imageUri = result.uri
             Log.d("TAG", "imageuri-> : " + imageUri.toString())
-            deal_image.setImageURI(imageUri)
+            uploadImage()
         } else {
             //startActivity(new Intent(this, HomeActivity.class));
             Toast.makeText(this, " ERROR!! -> Please Pick an Image", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun uploadImage(){
+        val firebaseStorage:FirebaseStorage = FirebaseStorage.getInstance()
+        val storageref = firebaseStorage.reference.child("deals_picture")
+        val fileref = storageref.child(imageUri?.lastPathSegment!!)
+        fileref.putFile(imageUri!!).addOnSuccessListener{
+             it.storage.downloadUrl.addOnCompleteListener {
+                imageurl = it.result.toString()
+                 deal_image.setImageURI(imageUri)
+            }
+
         }
     }
 }
