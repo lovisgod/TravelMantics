@@ -134,6 +134,7 @@ class InsertActivity : AppCompatActivity() {
     private fun displayDealLists() {
         val intent = Intent(this, ListActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
     private  fun clean () {
